@@ -26,6 +26,9 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 /bin/bash -c "$(curl -fsSL https://astral.sh/uv/install.sh)"
 ```
 
+### Download the Code
+Next, you need to get the code for this app. You can do this by downloading the ZIP file from the GitHub repository or by cloning the repository if you have Git installed.
+
 ### 🚀 Running the App
 Now, in the terminal, navigate to the folder where you saved this code. Then, run the following command:
 
