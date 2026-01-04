@@ -83,13 +83,21 @@ def main():
     state_list = list(model.state.keys())
     monitor_list = list(model.monitor.keys())
 
-    sel_state = col1.selectbox(
+    sel_state1 = col1.selectbox(
         "State", state_list, index=state_list.index("v") if "v" in state_list else 0
     )
-    sel_monitor = col2.selectbox(
+    sel_state2 = col1.selectbox(
+        "State", state_list, index=state_list.index("cai") if "cai" in state_list else 0
+    )
+    sel_monitor1 = col2.selectbox(
         "Monitor",
         monitor_list,
         index=monitor_list.index("IKr") if "IKr" in monitor_list else 0,
+    )
+    sel_monitor2 = col2.selectbox(
+        "Monitor",
+        monitor_list,
+        index=monitor_list.index("ICaL") if "ICaL" in monitor_list else 0,
     )
 
     if st.button("Run Simulation", type="primary"):
@@ -99,27 +107,44 @@ def main():
             )
 
             # Prepare plotting data
-            idx_state = model.state_index(sel_state)
-            idx_mon = model.monitor_index(sel_monitor)
+            idx_state1 = model.state_index(sel_state1)
+            idx_state2 = model.state_index(sel_state2)
+            idx_mon1 = model.monitor_index(sel_monitor1)
+            idx_mon2 = model.monitor_index(sel_monitor2)
 
-            mon_ctrl = model.monitor_values(
+            mon_ctrl1 = model.monitor_values(
                 t=res_ctrl.t, states=res_ctrl.y, parameters=p_ctrl
-            )[idx_mon, :]
-            mon_drug = model.monitor_values(
+            )[idx_mon1, :]
+            mon_drug1 = model.monitor_values(
                 t=res_drug.t, states=res_drug.y, parameters=p_drug
-            )[idx_mon, :]
+            )[idx_mon1, :]
+            mon_ctrl2 = model.monitor_values(
+                t=res_ctrl.t, states=res_ctrl.y, parameters=p_ctrl
+            )[idx_mon2, :]
+            mon_drug2 = model.monitor_values(
+                t=res_drug.t, states=res_drug.y, parameters=p_drug
+            )[idx_mon2, :]
 
             # Plotting
-            fig, ax = plt.subplots(2, 1, sharex=True)
-            ax[0].plot(res_ctrl.t, res_ctrl.y[idx_state, :], "k-", label="Control")
-            ax[0].plot(res_drug.t, res_drug.y[idx_state, :], "r--", label="Drug")
-            ax[0].set_ylabel(sel_state)
-            ax[0].legend()
-
-            ax[1].plot(res_ctrl.t, mon_ctrl, "k-")
-            ax[1].plot(res_drug.t, mon_drug, "r--")
-            ax[1].set_ylabel(sel_monitor)
-            ax[1].set_xlabel("Time (ms)")
+            fig, ax = plt.subplots(2, 2, sharex=True)
+            ax[0, 0].plot(res_ctrl.t, res_ctrl.y[idx_state1, :], "k-", label="Control")
+            ax[0, 0].plot(res_drug.t, res_drug.y[idx_state1, :], "r--", label="Drug")
+            ax[0, 0].set_ylabel(sel_state1)
+            ax[0, 0].legend()
+            ax[1, 0].plot(res_ctrl.t, res_ctrl.y[idx_state2, :], "k-")
+            ax[1, 0].plot(res_drug.t, res_drug.y[idx_state2, :], "r--")
+            ax[1, 0].set_ylabel(sel_state2)
+            ax[0, 1].plot(res_ctrl.t, mon_ctrl1, "k-")
+            ax[0, 1].plot(res_drug.t, mon_drug1, "r--")
+            ax[0, 1].set_ylabel(sel_monitor1)
+            ax[1, 1].plot(res_ctrl.t, mon_ctrl2, "k-")
+            ax[1, 1].plot(res_drug.t, mon_drug2, "r--")
+            ax[1, 1].set_ylabel(sel_monitor2)
+            ax[1, 0].set_xlabel("Time (ms)")
+            ax[1, 1].set_xlabel("Time (ms)")
+            fig.tight_layout()
+            for axi in ax.flatten():
+                axi.grid()
 
             st.pyplot(fig)
 
